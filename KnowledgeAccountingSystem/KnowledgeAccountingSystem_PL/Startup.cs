@@ -1,6 +1,10 @@
+using DAL;
+using DAL.Interfaces;
+using DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,7 +28,13 @@ namespace KnowledgeAccountingSystem_PL
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string connection = Configuration.GetConnectionString("KnowledgeAccountingSystem");
+            services.AddDbContext<AccountingSystemDbContext>(options =>
+                    options.UseSqlServer(connection));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAreaRepository, AreaRepository>();
             services.AddControllers();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,7 +44,7 @@ namespace KnowledgeAccountingSystem_PL
             {
                 app.UseDeveloperExceptionPage();
             }
-
+           
             app.UseRouting();
 
             app.UseAuthorization();
